@@ -6,15 +6,15 @@ Try the demo here: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybi
 
 ## Using ImJoy with Jupyter notebooks
 
-The imjoy-rpc library enables bidirectional RPC calls between the ImJoy core and your python plugin.
+This extension utilizes the [imjoy-rpc](https://github.com/imjoy-team/imjoy-rpc) library to enable bidirectional RPC calls between the ImJoy core and plugins.
 
 The library has an abstract transport interface that can support different types of transport. For now, we support [Jupyter comms message](https://jupyter-notebook.readthedocs.io/en/stable/comms.html) which is a custom message protocol used in Jupyter notebooks (for example powers jupyter widgets).
 
-To use it, you need to install the imjoy-rpc library in Python and the notebook extension in javascript.
+To use it, you need to install the `imjoy-jupyter-extension` in javascript which will also include the imjoy-rpc as a dependency.
 
-### Install ImJoy RPC and Jupyter notebook extension
+### Install the Jupyter notebook extension
 ```bash
-pip install -U imjoy-rpc imjoy-jupyter-extension
+pip install -U imjoy-jupyter-extension
 ```
 
 ### Use ImJoy plugins inside Jupyter notebooks
