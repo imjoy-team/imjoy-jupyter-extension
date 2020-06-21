@@ -261,6 +261,25 @@ const CSStyle = `
   width: 100%;
   height: 600px;
 }
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.dialog-control{
+  height: 16px;
+  border:0px;
+  font-size:1rem;
+  position:absolute;
+  color:white;
+  top:1px; 
+}
+.dialog-control:focus {
+  outline: none;
+}
 </style>`
 
 const APP_TEMPLATE = `
@@ -284,14 +303,14 @@ const APP_TEMPLATE = `
 </div>
 <modal name="window-modal-dialog" height="500px" style="max-height: 100%; max-width: 100%" :fullscreen="fullscreen" :resizable="true" draggable=".drag-handle" :scrollable="true">
     <div v-if="selected_dialog_window" @dblclick="maximizeWindow()" class="navbar-collapse collapse drag-handle" style="cursor:move; background-color: #448aff; color: white; text-align: center;">
-      {{ selected_dialog_window.name}}
-      <button @click="closeWindow(selected_dialog_window)" style="height: 16px;border:0px;font-size:1rem;position:absolute;background:#ff0000c4;color:white;top:1px; left:1px;">
+      <span class="noselect">{{ selected_dialog_window.name}}</span>
+      <button @click="closeWindow(selected_dialog_window)" class="noselect dialog-control" style="background:#ff0000c4;left:1px;">
         X
       </button>
-      <button @click="minimizeWindow()" style="height: 16px;border:0px;font-size:1rem;position:absolute;background:#00cdff61;color:white;top:1px; left:25px;">
+      <button @click="minimizeWindow()"  class="noselect dialog-control" style="background:#00cdff61;left:25px;">
         -
       </button>
-      <button @click="maximizeWindow()" style="height: 16px;border:0px;font-size:1rem;position:absolute;background:#00cdff61;color:white;top:1px; left:45px;">
+      <button @click="maximizeWindow()" class="noselect dialog-control" style="background:#00cdff61;left:45px;">
         {{fullscreen?'=': '+'}}
       </button>
     </div>
