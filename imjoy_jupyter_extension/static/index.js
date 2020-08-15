@@ -442,9 +442,6 @@ define([
                 .connectPlugin(new Connection())
               this.plugins[plugin.name] = plugin
               this.active_plugin = plugin;
-              if (plugin.api.setup) {
-                await plugin.api.setup()
-              }
               this.$forceUpdate()
             },
             async runNotebookPlugin() {
@@ -532,6 +529,12 @@ define([
         });
         window.connectPlugin = async function () {
           await app.connectPlugin()
+          await app.runNotebookPlugin()
+        }
+        window._connectPlugin = async function () {
+          await app.connectPlugin()
+        }
+        window._runPluginOnly = async function () {
           await app.runNotebookPlugin()
         }
       });
