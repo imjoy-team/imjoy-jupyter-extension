@@ -341,7 +341,7 @@ define([
     // support syntax highlighting for imjoy plugins
     require(['notebook/js/codecell', "codemirror/mode/htmlmixed/htmlmixed", "codemirror/mode/css/css", "codemirror/mode/javascript/javascript"], function (codecell) {
       codecell.CodeCell.options_default.highlight_modes['magic_html'] = {
-        reg: [/^## imjoy plugin/]
+        reg: [/^## ImJoy Plugin/]
       }
       Jupyter.notebook.events.one('kernel_ready.Kernel', function () {
         Jupyter.notebook.get_cells().map(function (cell) {
