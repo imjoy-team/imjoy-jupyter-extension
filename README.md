@@ -53,8 +53,87 @@ With the above code, you created an ImJoy plugin. To run it, click the Run butto
  * GIF Demo: [Visualizing 3D volume](https://ibb.co/QXR63XM)
  * GIF Demo: [Load ImageAnnotator](https://ibb.co/0Zyfxkr)
 
-### Run Jupyter notebook inside ImJoy
-
 You can also do the reverse by running a notebook inside ImJoy, to do that, please first create an empty jupyter notebook. Then copy and paste the url into the "+ PLUGINS" dialog, press enter and install the plugin. Click the newly installed plugin and you will get a notebook page open in ImJoy. 
 
 Try to copy and paste the itk-vtk-viewer example to a cell and execute it. Similarily, if you now click the run ImJoy button in the toolbar, you will get the viewer open insided ImJoy.
+
+
+### Load plugin dynamically in a notebook
+
+There are different ways to load a plugin in a notebook, you can load from URL for the source code of the plugin (e.g. gist or github file url) or a hosted web app (e.g. the itk-vtk-viewer app used above). Besides that, you can also write a window plugin directly in a notebook. This is practical especially for debugging window plugin for your GUI.
+
+You can directly pass a string with the plugin source code to `api.getPlugin`, `api.createWindow(src=...)` or `api.showDialog(src=...)`, however, that doesn't give you syntax highliting in a Jupyter notebook cell. A workaround solution (which also works for Google Colab) is to write plugin code in a seperate cell startting with `## ImJoy Plugin` and wrap the source code with `IPython.display.HTML()`. For example:
+```html
+## ImJoy Plugin
+from IPython.display import HTML
+my_plugin_source = HTML('''
+<docs lang="markdown">
+[TODO: write documentation for this plugin.]
+</docs>
+
+<config lang="json">
+{
+  "name": "Untitled Plugin",
+  "type": "window",
+  "tags": [],
+  "ui": "",
+  "version": "0.1.0",
+  "cover": "",
+  "description": "[TODO: describe this plugin with one sentence.]",
+  "icon": "extension",
+  "inputs": null,
+  "outputs": null,
+  "api_version": "0.1.8",
+  "env": "",
+  "permissions": [],
+  "requirements": [],
+  "dependencies": [],
+  "defaults": {"w": 20, "h": 10}
+}
+</config>
+
+<script lang="javascript">
+class ImJoyPlugin {
+  async setup() {
+    api.log('initialized')
+  }
+
+  async run(ctx) {
+
+  }
+}
+
+api.export(new ImJoyPlugin())
+</script>
+
+<window lang="html">
+  <div>
+    <p>
+    Hello World
+    </p>
+  </div>
+</window>
+
+<style lang="css">
+
+</style>
+''')
+```
+
+Then in another cell, you can passing the plugin source code to `api.getPlugin`, `api.createWindow(src=...)` or `api.showDialog(src=...)` to make an actually plugin:
+```python
+from imjoy import api
+class ImJoyPlugin():
+    async def setup(self):
+        pass
+
+    async def run(self, ctx):
+        # for regular plugin
+        # p = await api.getPlugin(my_plugin_source)
+
+        # or for window plugin
+        # await api.createWindow(src=my_plugin_source)
+        await api.showDialog(src=my_plugin_source)
+
+api.export(ImJoyPlugin())
+```

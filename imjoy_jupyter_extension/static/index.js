@@ -126,6 +126,9 @@ require.config({
     vue: "https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min",
     "vue-js-modal": "https://imjoy-team.github.io/vue-js-modal/index",
     snackbar: "https://cdnjs.cloudflare.com/ajax/libs/snackbarjs/1.1.0/snackbar.min",
+    "codemirror/mode/htmlmixed/htmlmixed": "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.57.0/mode/htmlmixed/htmlmixed.min",
+    "codemirror/mode/javascript/javascript": "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.57.0/mode/javascript/javascript.min",
+    "codemirror/mode/css/css": "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.57.0/mode/css/css.min"
   },
   waitSeconds: 30 // optional
 });
@@ -335,6 +338,19 @@ define([
   Jupyter
 ) {
   function load_ipython_extension() {
+    // support syntax highlighting for imjoy plugins
+    require(['notebook/js/codecell', "codemirror/mode/htmlmixed/htmlmixed", "codemirror/mode/css/css", "codemirror/mode/javascript/javascript"], function (codecell) {
+      codecell.CodeCell.options_default.highlight_modes['magic_html'] = {
+        reg: [/^## ImJoy Plugin/]
+      }
+      Jupyter.notebook.events.one('kernel_ready.Kernel', function () {
+        Jupyter.notebook.get_cells().map(function (cell) {
+          if (cell.cell_type == 'code') {
+            cell.auto_highlight();
+          }
+        });
+      });
+    });
     // check if it's inside an iframe
     // if yes, initialize the rpc connection
     if (window.self !== window.top) {
@@ -379,7 +395,7 @@ define([
           mounted() {
             window.dispatchEvent(new Event('resize'));
             imjoyLoder.loadImJoyCore({
-              version: '0.13.30'
+              version: '0.13.31'
             }).then(imjoyCore => {
               console.log(`ImJoy Core (v${imjoyCore.VERSION}) loaded.`)
               const imjoy = new imjoyCore.ImJoy({

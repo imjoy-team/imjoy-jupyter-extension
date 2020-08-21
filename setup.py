@@ -45,7 +45,7 @@ setup(
         ),
         ("etc/jupyter/nbconfig/notebook.d", ["imjoy_jupyter_extension.json"]),
     ],
-    install_requires=["imjoy-rpc", "notebook>=5.3"],
+    install_requires=["imjoy-rpc>=0.2.23", "notebook>=5.3"],
     extras_require={},
     zip_safe=False,
 )
