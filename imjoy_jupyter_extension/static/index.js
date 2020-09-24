@@ -223,7 +223,6 @@ async function startImJoy(app, imjoy) {
 }
 
 function setupComm(targetOrigin) {
-  console.log(Jupyter.notebook.kernel.comm_manager);
   const comm = Jupyter.notebook.kernel.comm_manager.new_comm("imjoy_rpc", {});
   comm.on_msg(msg => {
     const data = msg.content.data;
