@@ -4,17 +4,27 @@ Try the demo here: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybi
 
 ![](https://raw.githubusercontent.com/imjoy-team/imjoy-binder-image/master/screenshot-imjoy-notebook.png)
 
-## Using ImJoy with Jupyter notebooks
+## Using ImJoy with Jupyter Notebook and JupyterLab
 
 This extension utilizes the [imjoy-rpc](https://github.com/imjoy-team/imjoy-rpc) library to enable bidirectional RPC calls between the ImJoy core and plugins.
 
 The library has an abstract transport interface that can support different types of transport. For now, we support [Jupyter comms message](https://jupyter-notebook.readthedocs.io/en/stable/comms.html) which is a custom message protocol used in Jupyter notebooks (for example powers jupyter widgets).
 
-To use it, you need to install the `imjoy-jupyter-extension` in javascript which will also include the imjoy-rpc as a dependency.
+To use it, you need to install the `imjoy-jupyter-extension` in Python which will also include the imjoy-rpc as a dependency (see below).
 
-### Install the Jupyter notebook extension
+### Install the extension for Jupyter Notebook or JupyterLab
+
+For Jupyter Notebook, run:
+
 ```bash
 pip install -U imjoy-jupyter-extension
+```
+
+For Jupyter Lab, run:
+```bash
+pip install -U imjoy-jupyter-extension
+
+jupyter labextension install imjoy-jupyter-extension
 ```
 
 ### Use ImJoy plugins inside Jupyter notebooks
@@ -136,4 +146,18 @@ class ImJoyPlugin():
         await api.showDialog(src=my_plugin_source)
 
 api.export(ImJoyPlugin())
+```
+
+## Development
+
+To develop the JupyterLab extension, open a terminal and run:
+
+```bash
+cd imjoy_jupyterlab_extension
+npm run watch
+```
+
+In another terminal window run:
+```
+jupyter labextension install ./imjoy_jupyterlab_extension
 ```
