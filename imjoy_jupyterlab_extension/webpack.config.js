@@ -55,25 +55,6 @@ module.exports = [
     plugins: [
       new WebPackBar(),
     ],
-    externals: function(context, request, callback) {
-        if ( request.indexOf('http') === 0 ) {
-            fetchUrl(request, function(error, meta, body){
-                if (error) {
-                    throw error;
-                }
-                callback(null, body.toString());
-            });
-            return;
-        }
-        switch (request) {
-            // these are provided on the target platform
-            case 'PCD8544':
-            case 'Flash':
-                return callback(null, 'require("'+request+'")');
-        }
-        // default
-        callback();
-    },
     devServer,
   },
 ];
