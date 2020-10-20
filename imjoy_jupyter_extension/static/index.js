@@ -355,11 +355,11 @@ define([
     if (window.self !== window.top) {
       initPlugin();
       window.connectPlugin = function () {
-        comm = setupComm("*");
+        const comm = setupComm("*");
         setupMessageHandler("*", comm);
         console.log("ImJoy RPC reloaded.");
       };
-      var elem = document.createElement("div");
+      const elem = document.createElement("div");
       elem.id = "app";
       elem.style.display = "inline-block"
       elem.innerHTML = `<button class="btn btn-default" onclick="connectPlugin()"><i class="fa-play fa"></i>&nbsp;<img src="https://imjoy.io/static/img/imjoy-logo-black.svg" style="height: 18px;"></button>`;

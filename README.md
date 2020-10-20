@@ -32,6 +32,10 @@ Now you can start a jupyter notebook via for example `jupyter notebook` command,
 
 ![imjoy in the notebook toolbar](./imjoy_jupyter_extension/static/imjoy-toolbar.png)
 
+For JupyterLab, start it via `jupyter lab` command, then create a notebook and you should see an ImJoy button in the toolbar:
+
+![imjoy in the notebook toolbar](./imjoy_jupyterlab_extension/assets/screenshot-jupyterlab-imjoy.png)
+
 Now run ImJoy plugins in a cell, see an example that uses itk-vtk-viewer to visualize images:
 ```python
 import imageio

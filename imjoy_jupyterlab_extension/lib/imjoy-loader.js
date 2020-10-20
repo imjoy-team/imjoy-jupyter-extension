@@ -213,8 +213,9 @@ $.getStylesheet(
   }
   
   function setupComm(targetOrigin, kernel) {
-    const comm = kernel.comm_manager.new_comm("imjoy_rpc", {});
-    comm.on_msg(msg => {
+    const comm = kernel.createComm("imjoy_rpc");
+    comm.open({});
+    comm.onMsg = msg => {
       const data = msg.content.data;
       const buffer_paths = data.__buffer_paths__ || [];
       delete data.__buffer_paths__;
@@ -227,7 +228,7 @@ $.getStylesheet(
       } else {
         parent.postMessage(data, targetOrigin);
       }
-    });
+    };
     return comm;
   }
   
@@ -300,7 +301,7 @@ $.getStylesheet(
   </modal>
   </div>
   `
-  export function setupImJoyJupyterExtension(kernel, panelNode, buttonNode) {
+  export function setupImJoyJupyterExtension(kernel, panelNode, buttonNode, baseUrl) {
       // support syntax highlighting for imjoy plugins
     //   require(['notebook/js/codecell', "codemirror/mode/htmlmixed/htmlmixed", "codemirror/mode/css/css", "codemirror/mode/javascript/javascript"], function (codecell) {
     //     codecell.CodeCell.options_default.highlight_modes['magic_html'] = {
@@ -319,7 +320,7 @@ $.getStylesheet(
       if (window.self !== window.top) {
         initPlugin();
         window.connectPlugin = function () {
-          comm = setupComm("*", kernel);
+          const comm = setupComm("*", kernel);
           setupMessageHandler("*", comm);
           console.log("ImJoy RPC reloaded.");
         };
@@ -370,21 +371,21 @@ $.getStylesheet(
                 });
                 this.imjoy = imjoy;
                 startImJoy(this, this.imjoy).then(() => {
-                //   const base_url = new URL(Jupyter.notebook.base_url, document.baseURI).href
-                //   if (!base_url.endsWith('/')) base_url = base_url + '/';
-                //   this.imjoy.pm
-                //     .reloadPluginRecursively({
-                //       uri: base_url + 'elfinder/'
-                //     })
-                //     .then(async plugin => {
-                //       this.plugins[plugin.name] = plugin
-                //       this.showMessage(`Plugin ${plugin.name} successfully loaded into the workspace.`)
-                //       this.$forceUpdate()
-                //     })
-                //     .catch(e => {
-                //       console.error(e);
-                //       this.showMessage(`Failed to load the ImJoy elFinder plugin, error: ${e}`);
-                //     });
+                  const base_url = new URL(baseUrl, document.baseURI).href
+                  if (!base_url.endsWith('/')) base_url = base_url + '/';
+                  this.imjoy.pm
+                    .reloadPluginRecursively({
+                      uri: base_url + 'elfinder/'
+                    })
+                    .then(async plugin => {
+                      this.plugins[plugin.name] = plugin
+                      this.showMessage(`Plugin ${plugin.name} successfully loaded into the workspace.`)
+                      this.$forceUpdate()
+                    })
+                    .catch(e => {
+                      console.error(e);
+                      this.showMessage(`Failed to load the ImJoy elFinder plugin, error: ${e}`);
+                    });
                 })
         
             },

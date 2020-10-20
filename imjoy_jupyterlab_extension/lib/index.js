@@ -21,7 +21,10 @@ const version = require('../package.json').version;
 
 
 
-class ButtonExtension{
+class ImjoyExtension {
+  constructor(jupyterBaseUrl){
+    this.baseUrl = jupyterBaseUrl;
+  }
   /**
    * Create a new extension object.
    */
@@ -37,14 +40,11 @@ class ButtonExtension{
     });
     panel.toolbar.insertItem(0, 'runAll', button);
 
-    context.sessionContext.ready.then((scontext) => {
-      console.log('kernel: ', context.sessionContext.session.kernel)
-      // This one made it work
+    context.sessionContext.ready.then(() => {
       return context.sessionContext.session.kernel.ready;
     }).then(() => {
       const kernel = context.sessionContext.session.kernel;
-      setupImJoyJupyterExtension(kernel, panel.node, button.node)    
-      console.log('kernel', context.sessionContext.session.kernel)
+      setupImJoyJupyterExtension(kernel, panel.node, button.node, this.baseUrl)
     })
 
     return new DisposableDelegate(() => {
@@ -55,7 +55,7 @@ class ButtonExtension{
 
 
 module.exports = {
-  ButtonExtension,
+  ImjoyExtension,
   version
 };
 
