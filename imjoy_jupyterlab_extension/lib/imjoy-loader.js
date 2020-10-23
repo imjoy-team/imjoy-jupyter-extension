@@ -499,14 +499,23 @@ $.getStylesheet(
               }
             }
           });
-          window.connectPlugin = async function () {
+          window.imjoy_apps = window.imjoy_apps || {}
+          window.imjoy_apps[kernel._id] = app;
+          window.connectPlugin = async function (kernel_id) {
+            if(!kernel_id){
+              alert("Please upgrade imjoy-rpc(>=0.2.31) by running `pip install -U imjoy-rpc`")
+              return
+            }
+            const app = window.imjoy_apps[kernel_id]
             await app.connectPlugin()
             await app.runNotebookPlugin()
           }
-          window._connectPlugin = async function () {
+          window._connectPlugin = async function (kernel_id) {
+            const app = window.imjoy_apps[kernel_id]
             await app.connectPlugin()
           }
-          window._runPluginOnly = async function () {
+          window._runPluginOnly = async function (kernel_id) {
+            const app = window.imjoy_apps[kernel_id]
             await app.runNotebookPlugin()
           }
     
