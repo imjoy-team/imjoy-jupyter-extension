@@ -14,7 +14,7 @@ const {
 } = require('@jupyterlab/notebook');
 
 
-const {setupImJoyJupyterExtension} = require("./imjoy-loader.js");
+const {setupImJoyJupyterExtension} = require("./imjoy-jupyter-app.js");
 // const { INotebookTracker } = require('@jupyterlab/notebook');
 
 const version = require('../package.json').version;

@@ -1,6 +1,7 @@
 const vuejsmodal = require("vue-js-modal").default;
 const Vue = require("vue").default;
 const snackbar = require("snackbarjs");
+debugger
 Vue.use(vuejsmodal);
 const imjoyCore = require("imjoy-core");
 const $ = require("jquery");
@@ -186,18 +187,18 @@ $.getStylesheet(
         app.fullscreen = true;
       else
         app.fullscreen = false;
-      app.$modal.show("window-modal-dialog");
+      app.$modal.show(app.dialogId);
       app.$forceUpdate()
       w.api.show = w.show = () => {
         app.selected_dialog_window = w;
-        app.$modal.show("window-modal-dialog");
+        app.$modal.show(app.dialogId);
         imjoy.wm.selectWindow(w);
         w.api.emit("show");
       };
   
       w.api.hide = w.hide = () => {
         if (app.selected_dialog_window === w) {
-          app.$modal.hide("window-modal-dialog");
+          app.$modal.hide(app.dialogId);
         }
         w.api.emit("hide");
       };
@@ -276,7 +277,7 @@ $.getStylesheet(
   </style>`
   
   const APP_TEMPLATE = `
-  <modal name="window-modal-dialog" height="500px" style="max-height: 100%; max-width: 100%" :fullscreen="fullscreen" :resizable="true" draggable=".drag-handle" :scrollable="true">
+  <modal :name="dialogId" height="500px" style="max-height: 100%; max-width: 100%" :fullscreen="fullscreen" :resizable="true" draggable=".drag-handle" :scrollable="true">
       <div v-if="selected_dialog_window" @dblclick="maximizeWindow()" class="navbar-collapse collapse drag-handle" style="cursor:move; background-color: #448aff; color: white; text-align: center;">
         <span class="noselect">{{ selected_dialog_window.name}}</span>
         <button @click="closeWindow(selected_dialog_window)" class="noselect dialog-control" style="background:#ff0000c4;left:1px;">
@@ -349,6 +350,7 @@ $.getStylesheet(
               fullscreen: false,
               imjoy: null,
               active_plugin: null,
+              dialogId: 'window-modal-dialog-'+kernel._id,
             },
             mounted() {
               window.dispatchEvent(new Event('resize'));
@@ -482,17 +484,17 @@ $.getStylesheet(
                 else
                   this.fullscreen = false
                 if (w) this.selected_dialog_window = w;
-                this.$modal.show("window-modal-dialog");
+                this.$modal.show(this.dialogId);
               },
               closeWindow(w) {
                 this.selected_dialog_window = null;
-                this.$modal.hide("window-modal-dialog");
+                this.$modal.hide(this.dialogId);
                 const idx = this.dialogWindows.indexOf(w)
                 if (idx >= 0)
                   this.dialogWindows.splice(idx, 1)
               },
               minimizeWindow() {
-                this.$modal.hide("window-modal-dialog");
+                this.$modal.hide(this.dialogId);
               },
               maximizeWindow() {
                 this.fullscreen = !this.fullscreen;
