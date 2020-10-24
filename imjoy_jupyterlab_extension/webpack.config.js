@@ -1,5 +1,6 @@
 const path = require('path');
 const fetchUrl = require('fetch').fetchUrl;
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const WebPackBar = require('webpackbar');
 const { version } = require("./package.json");
 // Custom webpack rules are generally the same for all webpack bundles, hence
@@ -15,10 +16,20 @@ const rules = [
   },
   {
     test: /\.js$/,
-    use: {
-      loader: 'babel-loader'
-    },
+    exclude: /node_modules/,
+    use: ['babel-loader', "eslint-loader"],
   },
+  {
+    test: /\.vue$/,
+    loader: 'vue-loader'
+  },
+  {
+    test: /\.css$/,
+    use: [
+      'vue-style-loader',
+      'css-loader'
+    ]
+  }
 ]
 
 const devServer = {
@@ -53,6 +64,7 @@ module.exports = [
       }
     },
     plugins: [
+      new VueLoaderPlugin(),
       new WebPackBar(),
     ],
     devServer,

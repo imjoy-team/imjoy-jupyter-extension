@@ -141,7 +141,7 @@ class Connection extends MessageEmitter {
       const data = msg.content.data;
       const buffer_paths = data.__buffer_paths__ || [];
       delete data.__buffer_paths__;
-      put_buffers(data, buffer_paths, msg.buffers || []);
+      putBuffers(data, buffer_paths, msg.buffers || []);
       if (data.type === "log" || data.type === "info") {
         console.log(data.message);
       } else if (data.type === "error") {
@@ -159,7 +159,7 @@ class Connection extends MessageEmitter {
   disconnect() {}
   emit(data) {
     data.peer_id = this._peer_id;
-    const split = remove_buffers(data);
+    const split = removeBuffers(data);
     split.state.__buffer_paths__ = split.buffer_paths;
     this.comm.send(split.state, {}, {}, split.buffers);
   }
@@ -228,7 +228,7 @@ function setupComm(targetOrigin) {
     const data = msg.content.data;
     const buffer_paths = data.__buffer_paths__ || [];
     delete data.__buffer_paths__;
-    put_buffers(data, buffer_paths, msg.buffers || []);
+    putBuffers(data, buffer_paths, msg.buffers || []);
 
     if (data.type === "log" || data.type === "info") {
       console.log(data.message);
@@ -246,7 +246,7 @@ function setupMessageHandler(targetOrigin, comm) {
   window.addEventListener("message", e => {
     if (targetOrigin === "*" || e.origin === targetOrigin) {
       const data = e.data;
-      const split = remove_buffers(data);
+      const split = removeBuffers(data);
       split.state.__buffer_paths__ = split.buffer_paths;
       comm.send(split.state, {}, {}, split.buffers);
     }
@@ -594,11 +594,11 @@ function isObject(value) {
   return value && typeof value === "object" && value.constructor === Object;
 }
 
-// pub_buffers and remove_buffers are taken from
+// pub_buffers and removeBuffers are taken from
 // https://github.com/jupyter-widgets/ipywidgets/blob/master/packages/base/src/utils.ts
 // Author: IPython Development Team
 // License: BSD
-function put_buffers(state, buffer_paths, buffers) {
+function putBuffers(state, buffer_paths, buffers) {
   buffers = buffers.map(b => {
     if (b instanceof DataView) {
       return b.buffer;
@@ -620,14 +620,14 @@ function put_buffers(state, buffer_paths, buffers) {
 }
 
 /**
- * The inverse of put_buffers, return an objects with the new state where all buffers(ArrayBuffer)
+ * The inverse of putBuffers, return an objects with the new state where all buffers(ArrayBuffer)
  * are removed. If a buffer is a member of an object, that object is cloned, and the key removed. If a buffer
  * is an element of an array, that array is cloned, and the element is set to null.
- * See put_buffers for the meaning of buffer_paths
+ * See putBuffers for the meaning of buffer_paths
  * Returns an object with the new state (.state) an array with paths to the buffers (.buffer_paths),
  * and the buffers associated to those paths (.buffers).
  */
-function remove_buffers(state) {
+function removeBuffers(state) {
   const buffers = [];
   const buffer_paths = [];
   // if we need to remove an object from a list, we need to clone that list, otherwise we may modify
