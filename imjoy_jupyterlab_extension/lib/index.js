@@ -2,26 +2,24 @@
 
 // Export widget models and views, and the npm package version number.
 
-const { DisposableDelegate
-} = require('@lumino/disposable');
+import { DisposableDelegate
+} from '@lumino/disposable';
 
-const {
+import {
   ToolbarButton
-} = require('@jupyterlab/apputils');
+} from '@jupyterlab/apputils';
 
-const {
+import {
   NotebookActions
-} = require('@jupyterlab/notebook');
+} from '@jupyterlab/notebook';
 
 
-const {setupImJoyJupyterExtension} = require("./imjoy-jupyter-app.js");
+import {setupImJoyJupyterExtension} from "./imjoy-jupyter-app.js";
 // const { INotebookTracker } = require('@jupyterlab/notebook');
 
-const version = require('../package.json').version;
+export { version } from '../package.json';
 
-
-
-class ImjoyExtension {
+export class ImjoyExtension {
   constructor(jupyterBaseUrl){
     this.baseUrl = jupyterBaseUrl;
   }
@@ -52,11 +50,3 @@ class ImjoyExtension {
     });
   }
 }
-
-
-module.exports = {
-  ImjoyExtension,
-  version
-};
-
-module.exports = require('./index.js');

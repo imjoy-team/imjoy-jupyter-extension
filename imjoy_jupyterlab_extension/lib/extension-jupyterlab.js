@@ -1,4 +1,5 @@
-var extension = require('./index');
+import { ImjoyExtension } from './index';
+
 /**
  * Register the widget.
  */
@@ -7,7 +8,7 @@ module.exports = {
   // requires: [INotebookTracker],
   activate: function(app) {
       const jupyterBaseUrl = app.serviceManager.settings.serverSettings.baseUrl;
-      app.docRegistry.addWidgetExtension('Notebook', new extension.ImjoyExtension(jupyterBaseUrl));
+      app.docRegistry.addWidgetExtension('Notebook', new ImjoyExtension(jupyterBaseUrl));
   },
   autoStart: true
 };

@@ -1,10 +1,11 @@
-require("snackbarjs");
-const vuejsmodal = require("vue-js-modal").default;
-const Vue = require("vue").default;
+import "snackbarjs";
+import  vmodal from "vue-js-modal";
+import Vue from "vue";
+Vue.use(vmodal);
 
-Vue.use(vuejsmodal);
-const imjoyCore = require("imjoy-core");
-const $ = require("jquery");
+import * as imjoyCore from "imjoy-core";
+import $ from 'jquery';
+
 $.getStylesheet = function (href) {
     var $d = $.Deferred();
     var $link = $("<link/>", {
