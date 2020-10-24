@@ -1,6 +1,6 @@
 {
   "name": "imjoy-jupyter-extension",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Running ImJoy plugins in JupyterLab",
   "author": "Matthew McCormick",
   "license": "Apache-2.0",

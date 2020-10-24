@@ -1,7 +1,7 @@
+require("snackbarjs");
 const vuejsmodal = require("vue-js-modal").default;
 const Vue = require("vue").default;
-const snackbar = require("snackbarjs");
-debugger
+
 Vue.use(vuejsmodal);
 const imjoyCore = require("imjoy-core");
 const $ = require("jquery");
@@ -334,10 +334,13 @@ $.getStylesheet(
         // otherwise, load the imjoy core and run in standalone mode
       } else {
           buttonNode.firstChild.innerHTML = `<img src="https://imjoy.io/static/img/imjoy-logo-black.svg" style="height: 17px;">`;
-          
+          if(!document.getElementById('snackbar-container')){
+            const snackbarElm = document.createElement('div');
+            snackbarElm.id = 'snackbar-container';
+            document.body.appendChild(snackbarElm);
+          }
           const elem = document.createElement('div');
           (panelNode.parentElement || panelNode).appendChild(elem);
-          
           elem.style.display = "block";
           elem.innerHTML = APP_TEMPLATE;
           document.head.insertAdjacentHTML("beforeend", CSStyle)
@@ -421,7 +424,7 @@ $.getStylesheet(
               async runNotebookPlugin() {
                 try {
                   const plugin = this.active_plugin;
-                  if (plugin.api.run) {
+                  if (plugin && plugin.api.run) {
                     let config = {};
                     if (plugin.config.ui && plugin.config.ui.indexOf("{") > -1) {
                       config = await this.imjoy.pm.imjoy_api.showDialog(
