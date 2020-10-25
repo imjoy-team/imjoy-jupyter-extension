@@ -26,14 +26,10 @@ export class ImjoyExtension {
     });
     panel.toolbar.insertItem(0, 'runAll', button);
 
-    context.sessionContext.ready
-      .then(() => {
-        return context.sessionContext.session.kernel.ready;
-      })
-      .then(() => {
-        const { kernel } = context.sessionContext.session;
-        this.notebookHandler(kernel, panel.node, button.node);
-      });
+    context.sessionContext.ready.then(() => {
+      const { kernel } = context.sessionContext.session;
+      this.notebookHandler(kernel, panel.node, button.node);
+    });
 
     return new DisposableDelegate(() => {
       button.dispose();

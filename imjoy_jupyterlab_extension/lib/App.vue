@@ -208,7 +208,7 @@ export default {
         passive: true,
       });
     },
-    setupNotebook(kernel, panelNode, buttonNode) {
+    async setupNotebook(kernel, buttonNode) {
       this.kernelInfo[kernel._id] = { kernel };
       buttonNode.firstChild.innerHTML = `<img src="https://imjoy.io/static/img/imjoy-logo-black.svg" style="height: 17px;">`;
       buttonNode.firstChild.onclick = () => {
@@ -216,14 +216,24 @@ export default {
       };
     },
     async connectPlugin(kernel_id) {
+      if (!this.kernelInfo[kernel_id]) {
+        console.warn('Kernel is not ready: ' + kernel_id);
+        return;
+      }
+      const kernel = this.kernelInfo[kernel_id].kernel;
+      await kernel.ready;
       const plugin = await this.imjoy.pm.connectPlugin(
-        new Connection({ kernel: this.kernelInfo[kernel_id].kernel }),
+        new Connection({ kernel }),
       );
       this.plugins[plugin.name] = plugin;
       this.kernelInfo[kernel_id].plugin = plugin;
       this.$forceUpdate();
     },
     async runNotebookPlugin(kernel_id) {
+      if (!this.kernelInfo[kernel_id]) {
+        console.warn('Kernel is not ready: ' + kernel_id);
+        return;
+      }
       try {
         const plugin = this.kernelInfo[kernel_id].plugin;
         if (plugin && plugin.api.run) {
