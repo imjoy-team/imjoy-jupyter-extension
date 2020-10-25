@@ -14,6 +14,7 @@ export { version } from '../package.json';
 export class ImjoyExtension {
   constructor(jupyterBaseUrl) {
     this.baseUrl = jupyterBaseUrl;
+    this.notebookHandler = setupImJoyJupyterExtension(this.baseUrl);
   }
 
   /**
@@ -31,12 +32,7 @@ export class ImjoyExtension {
       })
       .then(() => {
         const { kernel } = context.sessionContext.session;
-        setupImJoyJupyterExtension(
-          kernel,
-          panel.node,
-          button.node,
-          this.baseUrl,
-        );
+        this.notebookHandler(kernel, panel.node, button.node);
       });
 
     return new DisposableDelegate(() => {
