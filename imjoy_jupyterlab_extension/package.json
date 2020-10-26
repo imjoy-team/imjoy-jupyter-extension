@@ -34,7 +34,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --mode development --watch --progress --colors",
     "format": "prettier --write \"lib/**\"",
-    "check": "prettier --check \"lib/**\""  
+    "check": "prettier --check \"lib/**\""
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -81,6 +81,7 @@
     "@jupyterlab/observables": "^3.2.4",
     "@jupyterlab/services": "^5.2.4",
     "@lumino/disposable": "^1.4.3",
+    "@lumino/widgets": "^1.14.0",
     "autoprefixer": "^9.7.6",
     "copy-webpack-plugin": "^5.1.1",
     "imjoy-core": "^0.13.38",
