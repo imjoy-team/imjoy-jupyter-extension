@@ -74,45 +74,6 @@ async function startImJoy(app, imjoy) {
     if (idx >= 0) app.dialogWindows.splice(idx, 1);
     app.$forceUpdate();
   });
-  imjoy.event_bus.on('add_window', w => {
-    if (document.getElementById(w.window_id)) return;
-    if (!w.dialog) {
-      if (document.getElementById(w.plugin.id)) {
-        const elem = document.createElement('div');
-        elem.id = w.window_id;
-        elem.classList.add('imjoy-inline-window');
-        document.getElementById(w.plugin.id).appendChild(elem);
-        return;
-      }
-    }
-    app.dialogWindows.push(w);
-    app.selected_dialog_window = w;
-    if (w.fullscreen || w.standalone) app.fullscreen = true;
-    else app.fullscreen = false;
-    app.$modal.show(app.dialogId);
-    app.$forceUpdate();
-    w.api.show = w.show = () => {
-      app.selected_dialog_window = w;
-      app.$modal.show(app.dialogId);
-      imjoy.wm.selectWindow(w);
-      w.api.emit('show');
-    };
-
-    w.api.hide = w.hide = () => {
-      if (app.selected_dialog_window === w) {
-        app.$modal.hide(app.dialogId);
-      }
-      w.api.emit('hide');
-    };
-
-    setTimeout(() => {
-      try {
-        w.show();
-      } catch (e) {
-        console.error(e);
-      }
-    }, 500);
-  });
 }
 
 export default {
@@ -134,6 +95,47 @@ export default {
   mounted() {
     window.dispatchEvent(new Event('resize'));
     console.log(`ImJoy Core (v${imjoyCore.VERSION}) loaded.`);
+    const app = this;
+    function add_window(_plugin, w) {
+      if (!document.getElementById(w.window_id)) {
+        if (!w.dialog) {
+          if (document.getElementById(_plugin.id)) {
+            const elem = document.createElement('div');
+            elem.id = w.window_id;
+            elem.classList.add('imjoy-inline-window');
+            document.getElementById(_plugin.id).appendChild(elem);
+          }
+        } else {
+          app.dialogWindows.push(w);
+          app.selected_dialog_window = w;
+          if (w.fullscreen || w.standalone) app.fullscreen = true;
+          else app.fullscreen = false;
+          app.$modal.show(app.dialogId);
+          app.$forceUpdate();
+          w.show = () => {
+            app.selected_dialog_window = w;
+            app.$modal.show(app.dialogId);
+            imjoy.wm.selectWindow(w);
+            w.api.emit('show');
+          };
+
+          w.hide = () => {
+            if (app.selected_dialog_window === w) {
+              app.$modal.hide(app.dialogId);
+            }
+            w.api.emit('hide');
+          };
+
+          setTimeout(() => {
+            try {
+              w.show();
+            } catch (e) {
+              console.error(e);
+            }
+          }, 500);
+        }
+      }
+    }
     const imjoy = new imjoyCore.ImJoy({
       imjoy_api: {
         async showMessage(_plugin, msg, duration) {
@@ -145,6 +147,11 @@ export default {
         },
         async showDialog(_plugin, config) {
           config.dialog = true;
+          add_window(_plugin, config);
+          return await imjoy.pm.createWindow(_plugin, config);
+        },
+        async createWindow(_plugin, config) {
+          add_window(_plugin, config);
           return await imjoy.pm.createWindow(_plugin, config);
         },
       },
@@ -173,7 +180,7 @@ export default {
     });
     window.connectPlugin = async kernel_id => {
       if (!kernel_id) {
-        alert(
+        console.warn(
           'Please upgrade imjoy-rpc(>=0.2.31) by running `pip install -U imjoy-rpc`',
         );
         return;
