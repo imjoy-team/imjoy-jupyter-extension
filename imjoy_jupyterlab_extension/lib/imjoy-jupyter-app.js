@@ -7,7 +7,6 @@ import 'snackbarjs/themes-css/material.css';
 import 'vue-js-modal/dist/styles.css';
 
 Vue.use(vmodal);
-Vue.component('app', App);
 
 export default function setupImJoyJupyterExtension(baseUrl) {
   if (window.self !== window.top) {
@@ -18,19 +17,15 @@ export default function setupImJoyJupyterExtension(baseUrl) {
     snackbarElm.id = 'snackbar-container';
     window.document.body.appendChild(snackbarElm);
   }
-  const elem = window.document.createElement('div');
-  // (panelNode.parentElement || panelNode).appendChild(elem);
-  document.body.appendChild(elem);
-  elem.style.display = 'block';
   // document.head.insertAdjacentHTML("beforeend", CSStyle)
-  const vapp = new Vue({
-    el: elem,
-    data: {
-      baseUrl,
-    },
-    template: `<app ref="app" :base-url="baseUrl"></app>`,
+  const ComponentClass = Vue.extend(App);
+  const appInstance = new ComponentClass({
+    propsData: { baseUrl },
   });
+  appInstance.$mount();
+  document.body.appendChild(appInstance.$el);
+
   return (kernel, panelNode, buttonNode) => {
-    vapp.$refs.app.setupNotebook(kernel, buttonNode);
+    appInstance.setupNotebook(kernel, buttonNode);
   };
 }
