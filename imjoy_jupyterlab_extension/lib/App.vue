@@ -74,53 +74,11 @@ async function startImJoy(app, imjoy) {
     if (idx >= 0) app.dialogWindows.splice(idx, 1);
     app.$forceUpdate();
   });
-  imjoy.event_bus.on('add_window', w => {
-    if (document.getElementById(w.window_id)) return;
-    if (!w.dialog) {
-      if (document.getElementById(app.active_plugin.id)) {
-        const elem = document.createElement('div');
-        elem.id = w.window_id;
-        elem.classList.add('imjoy-inline-window');
-        document
-          .getElementById(app.active_plugin.id)
-          .appendChild(elem);
-        return;
-      }
-    }
-    app.dialogWindows.push(w);
-    app.selected_dialog_window = w;
-    if (w.fullscreen || w.standalone) app.fullscreen = true;
-    else app.fullscreen = false;
-    app.$modal.show(app.dialogId);
-    app.$forceUpdate();
-    w.api.show = w.show = () => {
-      app.selected_dialog_window = w;
-      app.$modal.show(app.dialogId);
-      imjoy.wm.selectWindow(w);
-      w.api.emit('show');
-    };
-
-    w.api.hide = w.hide = () => {
-      if (app.selected_dialog_window === w) {
-        app.$modal.hide(app.dialogId);
-      }
-      w.api.emit('hide');
-    };
-
-    setTimeout(() => {
-      try {
-        w.show();
-      } catch (e) {
-        console.error(e);
-      }
-    }, 500);
-  });
 }
 
 export default {
   name: 'app',
   props: {
-    kernel: Object,
     baseUrl: String,
   },
   data: function() {
@@ -130,14 +88,54 @@ export default {
       plugins: {},
       fullscreen: false,
       imjoy: null,
-      active_plugin: null,
       dialogId: 'window-modal-dialog',
+      kernelInfo: {},
     };
   },
   mounted() {
-    (this.dialogId = 'window-modal-dialog-' + this.kernel._id),
-      window.dispatchEvent(new Event('resize'));
+    window.dispatchEvent(new Event('resize'));
     console.log(`ImJoy Core (v${imjoyCore.VERSION}) loaded.`);
+    const app = this;
+    function add_window(_plugin, w) {
+      if (!document.getElementById(w.window_id)) {
+        if (!w.dialog) {
+          if (document.getElementById(_plugin.id)) {
+            const elem = document.createElement('div');
+            elem.id = w.window_id;
+            elem.classList.add('imjoy-inline-window');
+            document.getElementById(_plugin.id).appendChild(elem);
+          }
+        } else {
+          app.dialogWindows.push(w);
+          app.selected_dialog_window = w;
+          if (w.fullscreen || w.standalone) app.fullscreen = true;
+          else app.fullscreen = false;
+          app.$modal.show(app.dialogId);
+          app.$forceUpdate();
+          w.show = () => {
+            app.selected_dialog_window = w;
+            app.$modal.show(app.dialogId);
+            imjoy.wm.selectWindow(w);
+            w.api.emit('show');
+          };
+
+          w.hide = () => {
+            if (app.selected_dialog_window === w) {
+              app.$modal.hide(app.dialogId);
+            }
+            w.api.emit('hide');
+          };
+
+          setTimeout(() => {
+            try {
+              w.show();
+            } catch (e) {
+              console.error(e);
+            }
+          }, 500);
+        }
+      }
+    }
     const imjoy = new imjoyCore.ImJoy({
       imjoy_api: {
         async showMessage(_plugin, msg, duration) {
@@ -149,6 +147,11 @@ export default {
         },
         async showDialog(_plugin, config) {
           config.dialog = true;
+          add_window(_plugin, config);
+          return await imjoy.pm.createWindow(_plugin, config);
+        },
+        async createWindow(_plugin, config) {
+          add_window(_plugin, config);
           return await imjoy.pm.createWindow(_plugin, config);
         },
       },
@@ -175,26 +178,21 @@ export default {
           );
         });
     });
-    window.imjoy_apps = window.imjoy_apps || {};
-    window.imjoy_apps[this.kernel._id] = this;
-    window.connectPlugin = async function(kernel_id) {
+    window.connectPlugin = async kernel_id => {
       if (!kernel_id) {
-        alert(
+        console.warn(
           'Please upgrade imjoy-rpc(>=0.2.31) by running `pip install -U imjoy-rpc`',
         );
         return;
       }
-      const app = window.imjoy_apps[kernel_id];
-      await app.connectPlugin();
-      await app.runNotebookPlugin();
+      await this.connectPlugin(kernel_id);
+      await this.runNotebookPlugin(kernel_id);
     };
-    window._connectPlugin = async function(kernel_id) {
-      const app = window.imjoy_apps[kernel_id];
-      await app.connectPlugin();
+    window._connectPlugin = async kernel_id => {
+      await this.connectPlugin(kernel_id);
     };
-    window._runPluginOnly = async function(kernel_id) {
-      const app = window.imjoy_apps[kernel_id];
-      await app.runNotebookPlugin();
+    window._runPluginOnly = async kernel_id => {
+      await this.runNotebookPlugin(kernel_id);
     };
   },
   methods: {
@@ -217,17 +215,34 @@ export default {
         passive: true,
       });
     },
-    async connectPlugin() {
+    async setupNotebook(kernel, buttonNode) {
+      this.kernelInfo[kernel._id] = { kernel };
+      buttonNode.firstChild.innerHTML = `<img src="https://imjoy.io/static/img/imjoy-logo-black.svg" style="height: 17px;">`;
+      buttonNode.firstChild.onclick = () => {
+        this.runNotebookPlugin(kernel._id);
+      };
+    },
+    async connectPlugin(kernel_id) {
+      if (!this.kernelInfo[kernel_id]) {
+        console.warn('Kernel is not ready: ' + kernel_id);
+        return;
+      }
+      const kernel = this.kernelInfo[kernel_id].kernel;
+      await kernel.ready;
       const plugin = await this.imjoy.pm.connectPlugin(
-        new Connection({ kernel: this.kernel }),
+        new Connection({ kernel }),
       );
       this.plugins[plugin.name] = plugin;
-      this.active_plugin = plugin;
+      this.kernelInfo[kernel_id].plugin = plugin;
       this.$forceUpdate();
     },
-    async runNotebookPlugin() {
+    async runNotebookPlugin(kernel_id) {
+      if (!this.kernelInfo[kernel_id]) {
+        console.warn('Kernel is not ready: ' + kernel_id);
+        return;
+      }
       try {
-        const plugin = this.active_plugin;
+        const plugin = this.kernelInfo[kernel_id].plugin;
         if (plugin && plugin.api.run) {
           let config = {};
           if (

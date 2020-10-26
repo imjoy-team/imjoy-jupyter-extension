@@ -14,6 +14,7 @@ export { version } from '../package.json';
 export class ImjoyExtension {
   constructor(jupyterBaseUrl) {
     this.baseUrl = jupyterBaseUrl;
+    this.notebookHandler = setupImJoyJupyterExtension(this.baseUrl);
   }
 
   /**
@@ -25,19 +26,10 @@ export class ImjoyExtension {
     });
     panel.toolbar.insertItem(0, 'runAll', button);
 
-    context.sessionContext.ready
-      .then(() => {
-        return context.sessionContext.session.kernel.ready;
-      })
-      .then(() => {
-        const { kernel } = context.sessionContext.session;
-        setupImJoyJupyterExtension(
-          kernel,
-          panel.node,
-          button.node,
-          this.baseUrl,
-        );
-      });
+    context.sessionContext.ready.then(() => {
+      const { kernel } = context.sessionContext.session;
+      this.notebookHandler(kernel, panel.node, button.node);
+    });
 
     return new DisposableDelegate(() => {
       button.dispose();
