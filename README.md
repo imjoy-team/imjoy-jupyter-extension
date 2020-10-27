@@ -47,15 +47,15 @@ class ImJoyPlugin():
         api.log('plugin initialized')
 
     async def run(self, ctx):
-        viewer = await api.showDialog(type="itk-vtk-viewer",
-                                      src="https://oeway.github.io/itk-vtk-viewer/")
+        viewer = await api.showDialog(src="https://kitware.github.io/itk-vtk-viewer/app/")
+
         # show a 3D volume
         image_array = np.random.randint(0, 255, [10,10,10], dtype='uint8')
         
         # show a 2D image
         # image_array = imageio.imread('imageio:chelsea.png')
 
-        await viewer.imshow(image_array)
+        await viewer.setImage(image_array)
 
 api.export(ImJoyPlugin())
 ```
