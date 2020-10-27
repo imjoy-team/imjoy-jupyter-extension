@@ -17,11 +17,11 @@ $.getStylesheet(
 );
 
 $.getStylesheet(
-  "https://fezvrasta.github.io/snackbarjs/themes-css/material.css"
+  "https://unpkg.com/snackbarjs@1.1.0/themes-css/material.css"
 );
 
 $.getStylesheet(
-  "https://fezvrasta.github.io/snackbarjs/dist/snackbar.min.css"
+  "https://unpkg.com/snackbarjs@1.1.0/dist/snackbar.min.css"
 );
 
 function randId() {
@@ -125,7 +125,7 @@ require.config({
     imjoyLoader: "https://lib.imjoy.io/imjoy-loader",
     vue: "https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min",
     "vue-js-modal": "https://imjoy-team.github.io/vue-js-modal/index",
-    snackbar: "https://cdnjs.cloudflare.com/ajax/libs/snackbarjs/1.1.0/snackbar.min",
+    snackbar: "https://unpkg.com/snackbarjs@1.1.0/dist/snackbar.min",
     "codemirror/mode/htmlmixed/htmlmixed": "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.57.0/mode/htmlmixed/htmlmixed.min",
     "codemirror/mode/javascript/javascript": "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.57.0/mode/javascript/javascript.min",
     "codemirror/mode/css/css": "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.57.0/mode/css/css.min"
@@ -350,6 +350,11 @@ define([
         });
       });
     });
+    if (!window.document.getElementById('snackbar-container')) {
+      const snackbarElm = window.document.createElement('div');
+      snackbarElm.id = 'snackbar-container';
+      window.document.body.appendChild(snackbarElm);
+    }
     // check if it's inside an iframe
     // if yes, initialize the rpc connection
     if (window.self !== window.top) {
