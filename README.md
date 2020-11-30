@@ -136,7 +136,7 @@ api.export(new ImJoyPlugin())
 
 Then in another cell, you can passing the plugin source code to `api.getPlugin`, `api.createWindow(src=...)` or `api.showDialog(src=...)` to make an actually plugin:
 ```python
-from imjoy import api
+from imjoy_rpc import api
 class ImJoyPlugin():
     async def setup(self):
         pass
