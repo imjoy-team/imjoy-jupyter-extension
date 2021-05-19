@@ -14,13 +14,26 @@ To use it, you need to install the `imjoy-jupyter-extension` in Python which wil
 
 ### Install the extension for Jupyter Notebook or JupyterLab
 
-For Jupyter Notebook, run:
+#### For Jupyter Notebooks
 
 ```bash
 pip install -U imjoy-jupyter-extension
 ```
+You can verify the installation by running:
+```
+jupyter nbextension list
+```
+And you should see something like `imjoy_jupyter_extension/index  enabled` in the output.
+If you still have issue, you can try to install it manually.
+```bash
+git clone https://github.com/imjoy-team/imjoy-jupyter-extension.git
+cd imjoy-jupyter-extension
+jupyter nbextension install imjoy_jupyter_extension --py # add --sys-prefix if using virtualenv or conda
+jupyter nbextension enable imjoy_jupyter_extension --py # add --sys-prefix if using virtualenv or conda
+jupyter nbextension list
+```
 
-For Jupyter Lab, run:
+#### For Jupyter Lab
 ```bash
 pip install -U imjoy-jupyter-extension
 
