@@ -182,7 +182,7 @@ async function startImJoy(app, imjoy) {
   imjoy.event_bus.on("add_window", w => {
     if (document.getElementById(w.window_id)) return;
     if (!w.dialog) {
-      if (document.getElementById(app.active_plugin.id)) {
+      if (app.active_plugin && document.getElementById(app.active_plugin.id)) {
         const elem = document.createElement("div");
         elem.id = w.window_id;
         elem.classList.add("imjoy-inline-window")
