@@ -6,5 +6,6 @@ def _jupyter_nbextension_paths():
             src="static",
             # directory in the `nbextension/` namespace
             dest="imjoy_jupyter_extension",
+            require="imjoy_jupyter_extension/index",
         )
     ]
