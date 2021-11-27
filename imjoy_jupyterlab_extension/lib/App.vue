@@ -181,7 +181,7 @@ export default {
     window.connectPlugin = async kernel_id => {
       if (!kernel_id) {
         console.warn(
-          'Please upgrade imjoy-rpc(>=0.2.31) by running `pip install -U imjoy-rpc`',
+          'Please upgrade imjoy-rpc(>=0.3.35) by running `pip install -U imjoy-rpc`',
         );
         return;
       }
