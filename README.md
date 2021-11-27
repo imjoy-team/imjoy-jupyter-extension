@@ -176,5 +176,8 @@ npm run watch
 
 In another terminal window run:
 ```
-jupyter labextension install ./imjoy_jupyterlab_extension
+cd imjoy_jupyterlab_extension
+npm run build
+jupyter labextension link .
+jupyter lab
 ```
